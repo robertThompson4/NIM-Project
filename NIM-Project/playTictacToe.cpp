@@ -151,9 +151,9 @@ int playTicTacToe(SOCKET s, std::string serverName, std::string remoteIP, std::s
 			 Add code here to convert "move" to a null-terminated C-string and send it to your opponent at remoteIP using remotePort.
 ****/
 			
-			char* moveValue=NULL;
-			_itoa_s(move,moveValue,45,10);
-			UDP_send(s, moveValue, MAX_SEND_BUFFER, remoteIP.c_str(), remotePort.c_str());
+			char moveString[MAX_SEND_BUFFER];
+			_itoa_s(move, moveString, 10);
+			UDP_send(s, moveString, strlen(moveString) + 1, remoteIP.c_str(), remotePort.c_str());
 
 		}
 		else {
@@ -167,12 +167,12 @@ int playTicTacToe(SOCKET s, std::string serverName, std::string remoteIP, std::s
 						(ii) call a function that will update the game board (see above) using your opponent's move, and
 						(iii) call a function that will display the updated board on your screen.
 				****/
-				char* getStuff='\0';
-				char* getRem= '\0';
-				char* getPort= '\0';
-				UDP_recv(s, getStuff, MAX_RECV_BUFFER, getRem, getPort);
-				int move3= atoi(getStuff);
-				updateBoard(board, move3, opponent);
+				char moveString[MAX_RECV_BUFFER];
+				char host[v4AddressSize];
+				char port[portNumberSize];
+				int numberBytes = UDP_recv(s, moveSting, MAX_RECV_BUFFER-1, host, port);
+				move = atoi(moveSting);
+				updateBoard(board, move, opponent);
 				displayBoard(board);
 			}
 			else {
