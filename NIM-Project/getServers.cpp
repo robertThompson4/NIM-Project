@@ -30,7 +30,7 @@ int getServers(SOCKET s, const char *broadcastAddress, const char *remotePort, S
 /****
 Task 3: Add code here that will send the TicTacToe_QUERY message to the broadcastAddress using the remotePort (see function header).
 ****/
-
+	numBytesRecvd = UDP_recv(s, recvBuffer, MAX_RECV_BUFFER, host, port);
 
 // Receive incoming UDP datagrams (with a maximum of 2 second wait before each UDP_recv() function call
 // As you read datagrams, if they start with the prefix: TicTacToe_NAME, parse out the server's name
@@ -45,8 +45,7 @@ Task 3: Add code here that will send the TicTacToe_QUERY message to the broadcas
 		Task 4a: Add code here that will receive a response to the previous broadcast message
 		****/
 		
-		UDP_recv(s, recvBuffer, MAX_SEND_BUFFER, host, port);
-		numBytesRecvd = atoi(recvBuffer);
+		UDP_send = UDP_recv(s, TicTacToe_QUERY, strlen(TicTacToe_QUERY)+1, broadcastAddress, remotePort);
 
 		// Ignoring responses that were sent using the broadcastAddress.  We need specific IP Address
 		while (status > 0 && numBytesRecvd > 0 && strcmp(host, broadcastAddress) != 0) {
@@ -59,6 +58,17 @@ Task 3: Add code here that will send the TicTacToe_QUERY message to the broadcas
 					 (iii) assign the server's port number to serverArray[numServers].port
 					 (iv) increment numServers
 			****/
+			
+			
+			char *startOfName = strstr(recvBuffer, TicTacToe_NAME);
+			if (startOfName != NULL) {
+    				serverArray[numServers].name = startOfName + strlen(TicTacToe_NAME);
+   				serverArray[numServers].host = host;    //(ii)
+    				serverArray[numServers].port = port;    //(iii)
+   				numServers++;
+			}
+			
+			
 			std::string recv = recvBuffer;
 
 			int index = recv.find(TicTacToe_NAME);
